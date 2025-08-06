@@ -1,6 +1,7 @@
 
 
 import { useRef, useState } from 'react';
+import { api } from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Info } from 'lucide-react';
 import { mockNotifications } from '@/lib/mock-data';
@@ -14,6 +15,8 @@ export function EditNotification({ notificationId, onBack }: EditNotificationPro
   const notification = mockNotifications.find(n => n.id === notificationId);
   const messageRef = useRef<HTMLTextAreaElement>(null);
   const [message, setMessage] = useState("");
+  const [isActive, setIsActive] = useState(notification?.isActive ?? false);
+  const [isLoading, setIsLoading] = useState(false);
   const variables = [
     { label: 'Nome completo', value: '{{nome_completo}}' },
     { label: 'Url boleto', value: '{{url_boleto}}' },
@@ -42,6 +45,26 @@ export function EditNotification({ notificationId, onBack }: EditNotificationPro
 
   if (!notification) {
     return <div className="p-4">Notificação não encontrada.</div>;
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!notification) return;
+    setIsLoading(true);
+    try {
+      await api.put(`/v1/notifications/${notification.id}`, {
+        isActive,
+        message,
+        // Adicione outros campos que desejar atualizar
+      });
+      // Aqui você pode chamar um callback ou atualizar o estado global/contexto para refletir na home
+      onBack(); // Volta para a home/lista após salvar
+    } catch (error) {
+      alert('Erro ao salvar notificação');
+      // Trate o erro conforme necessário
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -94,7 +117,7 @@ export function EditNotification({ notificationId, onBack }: EditNotificationPro
           </div>
         </div>
         {/* Formulário de edição igual NewNotification */}
-        <form className="flex flex-col gap-4 w-full" style={{ marginTop: 8, position: 'static' }}>
+        <form className="flex flex-col gap-4 w-full" style={{ marginTop: 8, position: 'static' }} onSubmit={handleSubmit}>
           <div className="flex flex-col gap-[5px] w-full">
             <label className="form-label" style={{ fontWeight: 600, fontSize: 14, lineHeight: '17px', color: '#000' }}>Evento <span className="text-red-500">*</span></label>
             <select className="select-box" style={{ fontWeight: 500, fontSize: 14, lineHeight: '17px', color: 'rgba(0,0,0,0.7)', borderRadius: 10, border: '1px solid rgba(0,0,0,0.2)', height: 44, padding: 10 }}>
@@ -144,9 +167,17 @@ export function EditNotification({ notificationId, onBack }: EditNotificationPro
           </div>
           <div className="toggle-group flex flex-row items-center gap-2 mt-2" style={{ height: 19 }}>
             <span className="toggle-label" style={{ fontWeight: 600, fontSize: 16, lineHeight: '19px', color: '#000' }}>Ativar notificação</span>
-            <input type="checkbox" className="w-6 h-6 rounded-full border border-black/20 accent-[#0B4D33]" />
+            <input
+              type="checkbox"
+              className="w-6 h-6 rounded-full border border-black/20 accent-[#0B4D33]"
+              checked={isActive}
+              onChange={e => setIsActive(e.target.checked)}
+              disabled={isLoading}
+            />
           </div>
-          <Button type="submit" className="save-button w-[262px] h-[48px] rounded-full bg-[#0B4D33] text-white font-semibold text-[16px] leading-[19px] mx-auto mt-8 flex items-center justify-center" style={{ fontWeight: 600, fontSize: 16, lineHeight: '19px', color: '#fff', position: 'static' }}>Salvar</Button>
+          <Button type="submit" className="save-button w-[262px] h-[48px] rounded-full bg-[#0B4D33] text-white font-semibold text-[16px] leading-[19px] mx-auto mt-8 flex items-center justify-center" style={{ fontWeight: 600, fontSize: 16, lineHeight: '19px', color: '#fff', position: 'static' }} disabled={isLoading}>
+            {isLoading ? 'Salvando...' : 'Salvar'}
+          </Button>
         </form>
       </div>
     </div>

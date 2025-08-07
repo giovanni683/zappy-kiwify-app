@@ -1,18 +1,38 @@
 "use client";
 
+import React from 'react';
 import { Notification } from '@/types/notification';
 
 interface NotificationCardClientProps {
   notification: Notification;
   onClick?: () => void;
   onEdit?: () => void;
+  onToggleActive?: (id: string, active: boolean) => void;
   cardHeight?: number; // altura variável do card
 }
 
-export function NotificationCardClient({ notification, onClick, onEdit, cardHeight = 295 }: NotificationCardClientProps) {
+export function NotificationCardClient({ notification, onClick, onEdit, cardHeight = 295, onToggleActive }: NotificationCardClientProps) {
   // Dados do card
   const title = notification.name || '';
-  const isActive = notification.isActive ?? false;
+  const [isActive, setIsActive] = React.useState(notification.isActive ?? false);
+  const [loading, setLoading] = React.useState(false);
+
+  // Toggle handler assíncrono
+  const handleToggle = async () => {
+    const newActive = !isActive;
+    setLoading(true);
+    try {
+      if (onToggleActive) {
+        await onToggleActive(notification.id, newActive);
+      }
+      setIsActive(newActive);
+    } catch (error) {
+      // Feedback de erro pode ser adicionado aqui
+      alert('Erro ao atualizar notificação.');
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div
       className="cursor-pointer"
@@ -76,32 +96,58 @@ export function NotificationCardClient({ notification, onClick, onEdit, cardHeig
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-                justifyContent: 'center',
                 alignItems: 'center',
-                padding: 8,
-                gap: 13,
-                height: 36,
-                background: isActive ? '#E1E9E7' : 'rgba(239,68,68,0.2)',
-                borderRadius: 100,
+                gap: 7,
               }}
             >
-              {isActive ? (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B4D33" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-              ) : (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-              )}
               <span
                 style={{
                   fontWeight: 600,
                   fontSize: 16,
-                  lineHeight: '24px',
-                  color: isActive ? '#0B4D33' : '#EF4444',
+                  lineHeight: '19px',
+                  color: '#000',
                   fontFamily: 'Inter, sans-serif',
-                  textAlign: 'center',
+                  marginRight: 7,
+                }}
+                id={`toggle-label-${notification.id}`}
+              >
+                Ativar notificação
+              </span>
+              <button
+                type="button"
+                aria-pressed={isActive}
+                aria-labelledby={`toggle-label-${notification.id}`}
+                onClick={handleToggle}
+                disabled={loading}
+                style={{
+                  position: 'relative',
+                  width: 36,
+                  height: 17,
+                  background: isActive ? '#0B4D33' : '#E1E1E1',
+                  borderRadius: 100,
+                  border: 'none',
+                  outline: 'none',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.7 : 1,
+                  transition: 'background 0.2s',
+                  marginRight: 10,
                 }}
               >
-                {isActive ? 'Ativo' : 'Inativo'}
-              </span>
+                <span
+                  style={{
+                    position: 'absolute',
+                    left: isActive ? 20 : 1,
+                    top: 1,
+                    width: 15,
+                    height: 15,
+                    background: isActive ? '#0B4D33' : '#ACACAC',
+                    borderRadius: '50%',
+                    boxShadow: '0px 9px 40px rgba(0,0,0,0.105)',
+                    transition: 'left 0.2s, background 0.2s',
+                  }}
+                  aria-hidden="true"
+                />
+              </button>
             </div>
             <div
               style={{

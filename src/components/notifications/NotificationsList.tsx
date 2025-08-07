@@ -19,13 +19,20 @@ export function NotificationsList({ notifications, onNotificationClick, onNotifi
   }
 
   return (
-    <div className="space-y-3">
+    <div
+      style={{
+        width: 388,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16,
+      }}
+    >
       {notifications.map((notification) => (
         <NotificationCardClient
           key={notification.id}
           notification={notification}
-          onClick={() => onNotificationClick?.(notification.id)}
-          onEdit={() => onNotificationEdit?.(notification.id)}
+          onClick={() => (onNotificationClick ? onNotificationClick(notification.id) : undefined)}
+          onEdit={() => (onNotificationEdit ? onNotificationEdit(notification.id) : undefined)}
         />
       ))}
     </div>

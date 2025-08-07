@@ -51,31 +51,107 @@ export default function HomePage() {
   };
 
   return (
-    <div className="max-w-[420px] mx-auto bg-gray-50 min-h-screen">
+    <div
+      className="bg-gray-50 min-h-screen"
+      style={{ position: 'relative', width:  '420px', minHeight: '100vh', margin: '0 auto' }}
+    >
       <Header />
-      <div className="p-4">
-        <div className="mb-6">
-          <h2 style={{ color: '#000', fontFamily: 'Inter, sans-serif', fontSize: '24px', fontWeight: 700, lineHeight: 'normal' }} className="mb-2">
+      <div
+        style={{
+          position: 'absolute',
+          left: 16,
+          top: 181,
+          width: 388,
+          height: 608,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'flex-end',
+          padding: 0,
+          gap: 22,
+        }}
+      >
+        <div style={{ width: 388 }}>
+          <h2
+            style={{
+              color: '#000',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: 24,
+              fontWeight: 700,
+              lineHeight: '24px',
+              marginBottom: 8,
+              textAlign: 'left',
+            }}
+          >
             Notificações
           </h2>
-          <p style={{ color: 'rgba(0, 0, 0, 0.70)', fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: 'normal' }}>
+          <p
+            style={{
+              color: 'rgba(0, 0, 0, 0.70)',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: 14,
+              fontWeight: 500,
+              lineHeight: '24px',
+              marginBottom: 16,
+              textAlign: 'left',
+            }}
+          >
             Gerencie aqui as notificações disparadas a partir dos eventos da Kiwify.
           </p>
         </div>
-        <div className="mb-2">
-          <FilterControls
-            searchTerm={searchTerm}
-            filterStatus={filterStatus}
-            onSearchChange={setSearchTerm}
-            onFilterChange={setFilterStatus}
-          />
+        <div style={{ width: 388, marginBottom: 22 }}>
+          <div
+            style={{
+              boxSizing: 'border-box',
+              padding: 16,
+              width: 388,
+              height: 44,
+              border: '1px solid rgba(0, 0, 0, 0.2)',
+              borderRadius: 100,
+              background: '#fff',
+              display: 'block',
+            }}
+          >
+            <FilterControls
+              searchTerm={searchTerm}
+              filterStatus={filterStatus}
+              onSearchChange={setSearchTerm}
+              onFilterChange={setFilterStatus}
+            />
+          </div>
         </div>
-        <div className="flex justify-end mb-6">
-          <Button onClick={handleNova} className="bg-[#0B4D33] hover:bg-[#166c4e] text-white font-bold px-5 py-2 rounded-full">
-            + Notificação
+        <div style={{ width: 388, display: 'flex', justifyContent: 'flex-end', marginBottom: 22 }}>
+          <Button
+            onClick={handleNova}
+            className="flex items-center gap-2 bg-[#0B4D33] hover:bg-[#166c4e] text-white font-bold px-6 py-2 rounded-full"
+            style={{
+              width: 144,
+              height: 44,
+              borderRadius: 100,
+              background: '#0B4D33',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 10,
+            }}
+          >
+            <Plus size={24} color="#fff" />
+            <span
+              style={{
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 700,
+                fontSize: 16,
+                lineHeight: '24px',
+                color: '#fff',
+                textAlign: 'center',
+              }}
+            >
+              Notificação
+            </span>
           </Button>
         </div>
-        <div className="mb-6">
+        <div style={{ width: 388, marginBottom: 22 }}>
           <NotificationsList
             notifications={filteredNotifications}
             onNotificationClick={handleVerDetalhes}
